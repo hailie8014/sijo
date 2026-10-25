@@ -481,7 +481,9 @@ function updateSubmit(){
   store.set("gs-class",$("poemClass").value); store.set("gs-name",$("poemName").value.trim()); updateSubmit();
 }));
 $("poemClass").addEventListener("change",()=>{ store.set("gs-class",$("poemClass").value); updateSubmit(); });
-$("btnSubmit").addEventListener("click",e=>{ if($("btnSubmit").getAttribute("aria-disabled")==="true"){ e.preventDefault(); return; } toast("폼이 열리면 Submit을 누르세요 · Press Submit on the form"); });
+["poemClass","poemName","poemTitle"].forEach(id=>{ $(id).addEventListener("compositionend",updateSubmit); $(id).addEventListener("change",updateSubmit); $(id).addEventListener("blur",updateSubmit); });
+$("btnSubmit").addEventListener("pointerdown",updateSubmit);
+$("btnSubmit").addEventListener("click",e=>{ updateSubmit(); if($("btnSubmit").getAttribute("aria-disabled")==="true"){ e.preventDefault(); return; } toast("폼이 열리면 Submit을 누르세요 · Press Submit on the form"); });
 
 render();
 </script>
