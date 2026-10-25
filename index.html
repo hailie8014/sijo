@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>시조 한 편 Sijo Moments</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: a hanji-white poem board (3 lines × 4 boxes) above a card tray; celadon = correct, ochre = recount, seal red = accent */
+:root{
+  --bg:#EEF2EF; --paper:#FFFFFF; --ink:#1D2626; --muted:#5E6B69; --line:#D3DCD8;
+  --celadon:#3F7D6E; --celadon-soft:#E1EEE9; --seal:#A8323F; --warn:#9A6414; --warn-soft:#FAEFD9;
+  --c-end:#A8323F; --c-act:#3F7D6E; --c-feel:#7D4F92; --c-link:#6D7775; --c-noun:#2F6497;
+  --f-poem:"Gowun Batang","Nanum Myeongjo","Apple SD Gothic Neo",serif;
+  --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111718; --paper:#1A2223; --ink:#E6EDEB; --muted:#9AA8A5; --line:#2D393A;
+  --celadon:#7DC2AF; --celadon-soft:#1C312C; --seal:#E36B79; --warn:#E5AE55; --warn-soft:#382B15;
+  --c-end:#E36B79; --c-act:#7DC2AF; --c-feel:#C29AD6; --c-link:#9AA8A5; --c-noun:#86B5E8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111718; --paper:#1A2223; --ink:#E6EDEB; --muted:#9AA8A5; --line:#2D393A;
+  --celadon:#7DC2AF; --celadon-soft:#1C312C; --seal:#E36B79; --warn:#E5AE55; --warn-soft:#382B15;
+  --c-end:#E36B79; --c-act:#7DC2AF; --c-feel:#C29AD6; --c-link:#9AA8A5; --c-noun:#86B5E8; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.slot:focus-visible,.card:focus-visible,input:focus-visible{outline:3px solid var(--celadon);outline-offset:2px}
+.en{display:block;font-size:.78em;color:var(--muted);font-weight:400;line-height:1.3}
+
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-poem);font-weight:700;font-size:clamp(30px,6vw,44px);margin:0;line-height:1.1;display:flex;align-items:center;gap:12px}
+.seal{display:inline-grid;place-items:center;width:1.15em;height:1.15em;border:2px solid var(--seal);color:var(--seal);border-radius:6px;font-size:.55em;transform:rotate(-4deg)}
+h1 small{display:block;font-family:var(--f-ui);font-size:14px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.howto{margin:0;color:var(--ink);font-size:15px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 14px;font-size:14px;line-height:1.25;text-align:left}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--celadon);border-color:var(--celadon);color:var(--paper)}
+.btn.primary .en{color:inherit;opacity:.85}
+
+.themebar{display:flex;flex-direction:column;gap:8px}
+.themehead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.themehead strong{font-family:var(--f-poem);font-size:18px}
+.themes{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 12px;text-align:left;line-height:1.2}
+.chip b{font-family:var(--f-poem);font-size:17px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip[aria-pressed="true"] .en{color:inherit;opacity:.8}
+
+/* Board */
+.board{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px clamp(12px,3vw,24px);display:flex;flex-direction:column;gap:14px}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.meter{font-variant-numeric:tabular-nums;font-weight:600}
+.row{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center}
+.rowlab{font-family:var(--f-poem);font-weight:700;font-size:18px}
+.rowlab .en{font-family:var(--f-ui);font-size:12px}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{min-height:84px;border:2px dashed var(--line);border-radius:10px;display:flex;align-items:stretch;justify-content:stretch;position:relative;transition:border-color .15s,background .15s}
+.slot.empty{align-items:center;justify-content:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.slot.empty b{font-size:22px;font-family:var(--f-poem)}
+.slot.empty span{font-size:11px;display:block;text-align:center}
+.slot.active{border-color:var(--celadon);border-style:solid;background:var(--celadon-soft)}
+.slot.hover{border-color:var(--celadon);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--celadon)}
+.slot.bad{border-style:solid;border-color:var(--warn);background:var(--warn-soft)}
+.slot .card{flex:1;border:none;background:transparent;box-shadow:none}
+.mark{position:absolute;top:-9px;right:-6px;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--paper);border:1.5px solid currentColor;font-variant-numeric:tabular-nums}
+.slot.ok .mark{color:var(--celadon)} .slot.bad .mark{color:var(--warn)}
+.challenge{font-size:14px;padding:8px 12px;border-radius:10px;background:var(--bg);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Cards */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 8px 7px;display:flex;flex-direction:column;gap:2px;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab;position:relative;min-width:0;text-align:left}
+.card .ko{font-family:var(--f-poem);font-weight:700;font-size:21px;line-height:1.2;word-break:keep-all}
+.card .gl{font-size:11.5px;color:var(--muted);line-height:1.25;overflow-wrap:anywhere}
+.card .meta{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.card .cnt{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:1px}
+.k-end .dot{background:var(--c-end)} .k-act .dot{background:var(--c-act)} .k-feel .dot{background:var(--c-feel)} .k-link .dot{background:var(--c-link)} .k-noun .dot{background:var(--c-noun)} .k-my .dot{background:var(--seal)}
+.card.sel{outline:3px solid var(--celadon);outline-offset:1px}
+.card.fit{background:var(--celadon-soft);border-color:var(--celadon)}
+.slot .card.fit{background:transparent}
+.card.chal::after{content:"도전";position:absolute;top:-8px;left:-6px;font-size:10px;font-weight:600;color:var(--seal);background:var(--paper);border:1.5px solid var(--seal);border-radius:4px;padding:0 4px;transform:rotate(-6deg)}
+.card.dragging{opacity:.3}
+.ghost{position:fixed;z-index:50;pointer-events:none;width:120px;box-shadow:0 8px 24px rgb(0 0 0 / .22);transform:rotate(-2deg)}
+
+/* Tray */
+.tray{display:flex;flex-direction:column;gap:12px}
+.trayhead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.trayhead h2{margin:0;font-family:var(--f-poem);font-size:20px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 13px;font-size:13px;font-variant-numeric:tabular-nums}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;min-height:90px;padding:10px;border-radius:12px;background:color-mix(in srgb,var(--line) 35%,transparent)}
+.grid.droptarget{outline:2px dashed var(--muted);outline-offset:-4px}
+.emptytray{grid-column:1/-1;align-self:center;text-align:center;color:var(--muted);font-size:14px}
+
+.mine{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;font-size:13px}
+.mine label{display:flex;flex-direction:column;gap:3px;flex:1 1 150px;min-width:0}
+.mine input,.done input{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.mine .live{font-variant-numeric:tabular-nums;color:var(--muted);align-self:center}
+
+/* Finished */
+.done{background:var(--paper);border:2px solid var(--celadon);border-radius:14px;padding:18px clamp(14px,3vw,24px);display:flex;flex-direction:column;gap:12px}
+.done h2{margin:0;font-family:var(--f-poem);font-size:24px;color:var(--celadon)}
+.done .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.done label{display:flex;flex-direction:column;gap:3px;font-size:13px}
+.poem{font-family:var(--f-poem);font-size:clamp(19px,3.4vw,24px);line-height:1.8;margin:0;padding:12px 0;border-block:1px solid var(--line);word-break:keep-all}
+.saved{display:flex;flex-direction:column;gap:8px}
+.saved h2{margin:0;font-family:var(--f-poem);font-size:20px}
+.saveditem{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.saveditem p{margin:0;font-family:var(--f-poem);min-width:0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;z-index:60}
+
+/* Present */
+.present{position:fixed;inset:0;z-index:80;background:var(--paper);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;padding:calc(24px + env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));text-align:center;overflow:auto}
+.present h3{font-family:var(--f-poem);font-size:clamp(26px,5vw,48px);margin:0}
+.present .by{color:var(--muted);font-size:clamp(14px,2vw,20px)}
+.present .lines{font-family:var(--f-poem);font-size:clamp(22px,4.6vw,46px);line-height:1.9;word-break:keep-all}
+.present .close{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px))}
+
+@media (max-width:560px){
+  .row{grid-template-columns:1fr}
+  .rowlab{display:flex;gap:8px;align-items:baseline}
+  .slot{min-height:76px}
+  .card .ko{font-size:18px}
+  .card .gl{font-size:10.5px}
+  .card{padding:7px 6px 6px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span class="seal" aria-hidden="true">詩</span><span>시조 한 편<small>Sijo Moments</small></span></h1>
+    </div>
+    <div class="tools">
+      <button class="btn" id="btnExample">예시 보기<span class="en">Show example</span></button>
+      <button class="btn" id="btnChallenge">도전 카드 2장<span class="en">Draw 2 challenge cards</span></button>
+      <button class="btn" id="btnClear">모두 지우기<span class="en">Clear board</span></button>
+    </div>
+  </header>
+
+  <div class="themebar">
+    <div class="themehead"><strong>주제<span class="en">Theme</span></strong><button class="btn" id="btnTheme">주제 뽑기<span class="en">Draw a theme</span></button></div>
+    <div class="themes" id="themes" role="group" aria-label="주제"></div>
+  </div>
+
+  <p class="howto">카드를 칸으로 끌어다 놓거나, 카드를 누르고 칸을 누르세요. 끝맺음은 '-다'로 맞춰요.<span class="en">Drag a card into a box, or tap a card and then tap a box. Count syllable blocks: 내 곁에 = 3. End lines with -다.</span></p>
+
+  <section class="board" aria-label="시조 틀">
+    <div class="status">
+      <span class="meter" id="meter">0 / 12</span>
+      <span id="statusMsg"></span>
+    </div>
+    <div id="rows"></div>
+    <div class="challenge" id="challengeBox" hidden></div>
+  </section>
+
+  <section class="done" id="done" hidden>
+    <h2>완성! <span class="en" style="display:inline;font-family:var(--f-ui)">Your sijo is complete.</span></h2>
+    <div class="fields">
+      <label for="poemTitle">제목<span class="en">Title</span><input id="poemTitle" maxlength="40"></label>
+      <label for="poemName">이름<span class="en">Name</span><input id="poemName" maxlength="30"></label>
+    </div>
+    <p class="poem" id="poemText"></p>
+    <div class="tools">
+      <button class="btn primary" id="btnPresent">크게 보기<span class="en">Show on screen</span></button>
+      <button class="btn" id="btnCopy">복사하기<span class="en">Copy to share</span></button>
+      <button class="btn" id="btnSave">내 시조 모음에 저장<span class="en">Save to my poems</span></button>
+    </div>
+  </section>
+
+  <section class="tray">
+    <div class="trayhead">
+      <h2>카드<span class="en" style="font-family:var(--f-ui)">Phrase cards</span></h2>
+      <div class="tabs" id="tabs"></div>
+      <button class="btn" id="btnShuffle">섞기<span class="en">Shuffle</span></button>
+    </div>
+    <div class="grid" id="tray"></div>
+    <form class="mine" id="mineForm">
+      <label for="mineKo">나만의 카드<span class="en">Your own phrase</span><input id="mineKo" maxlength="12" autocomplete="off"></label>
+      <label for="mineEn">뜻<span class="en">English meaning</span><input id="mineEn" maxlength="40" autocomplete="off"></label>
+      <span class="live" id="mineCount">0자</span>
+      <button class="btn" type="submit">카드 만들기<span class="en">Add card</span></button>
+    </form>
+  </section>
+
+  <section class="saved" id="saved" hidden>
+    <h2>내 시조 모음<span class="en" style="font-family:var(--f-ui)">My poems (this device)</span></h2>
+    <div id="savedList" class="saved"></div>
+  </section>
+</div>
+
+<div class="present" id="present" hidden role="dialog" aria-modal="true" aria-label="시조 크게 보기">
+  <button class="btn close" id="btnClose">닫기<span class="en">Close</span></button>
+  <h3 id="pTitle"></h3>
+  <div class="lines" id="pLines"></div>
+  <div class="by" id="pBy"></div>
+</div>
+
+<script>
+const RAW = [["오늘도", "today, too", "link", "both"], ["언제나", "always", "link", "both"], ["조용히", "quietly", "link", "both"], ["이렇게", "in this way", "link", "both"], ["내 곁에", "by my side", "place", "both"], ["힘들 때", "when things are hard", "link", "both"], ["지칠 때", "when I am tired", "link", "both"], ["우리가", "we (subject)", "person", "both"], ["친구가", "a friend (subject)", "person", "both"], ["가족이", "my family (subject)", "person", "both"], ["마음이", "the heart (subject)", "feel", "both"], ["웃음이", "a smile; laughter (subject)", "feel", "both"], ["바람이", "the wind (subject)", "thing", "both"], ["햇살이", "sunlight (subject)", "thing", "both"], ["바다가", "the sea (subject)", "thing", "both"], ["하늘이", "the sky (subject)", "thing", "both"], ["꽃잎이", "a flower petal (subject)", "thing", "both"], ["빗소리", "the sound of rain", "thing", "both"], ["노래가", "a song (subject)", "thing", "both"], ["음식이", "food (subject)", "thing", "both"], ["꿈꾸며", "while dreaming", "act", "both"], ["내 꿈을", "my dream (object)", "thing", "both"], ["사랑을", "love (object)", "feel", "both"], ["행복을", "happiness (object)", "feel", "both"], ["고맙다", "I am thankful", "end", "both"], ["기쁘다", "I am glad", "end", "both"], ["그립다", "I miss it", "end", "both"], ["반갑다", "it is good to see", "end", "both"], ["빛난다", "it shines", "end", "both"], ["웃는다", "I smile", "end", "both"], ["걷는다", "I walk", "end", "both"], ["배운다", "I learn", "end", "both"], ["담는다", "I hold it in", "end", "both"], ["전한다", "I pass it on", "end", "both"], ["나눈다", "I share it", "end", "both"], ["남는다", "it remains", "end", "both"], ["새긴다", "I carve it (in my heart)", "end", "both"], ["꿈꾼다", "I dream", "end", "both"], ["흐른다", "it flows", "end", "both"], ["피었다", "it bloomed", "end", "both"], ["따뜻한 말", "warm words", "thing", "both"], ["다정한 말", "kind words", "thing", "both"], ["작은 배려", "a small kindness", "thing", "both"], ["환한 미소", "a bright smile", "thing", "both"], ["그 응원에", "at that encouragement", "link", "both"], ["맛있는 밥", "a delicious meal", "thing", "both"], ["좋은 친구", "a good friend", "person", "both"], ["푸른 바다", "the blue sea", "thing", "both"], ["맑은 하늘", "a clear sky", "thing", "both"], ["우리 학교", "our school", "place", "both"], ["나의 노래", "my song", "thing", "both"], ["나의 꿈을", "my dream (object)", "thing", "both"], ["매일매일", "every single day", "link", "both"], ["오래도록", "for a long time", "link", "both"], ["마음 깊이", "deep in my heart", "link", "both"], ["나를 믿고", "believing in me, and...", "act", "both"], ["나를 돕고", "helping me, and...", "act", "both"], ["손을 잡고", "holding hands, and...", "act", "both"], ["함께 웃고", "laughing together, and...", "act", "both"], ["함께 걷고", "walking together, and...", "act", "both"], ["웃어 주니", "because you smile at me", "act", "both"], ["믿어 주니", "because you believe in me", "act", "both"], ["그 한마디", "that one word", "thing", "both"], ["노래하며", "while singing", "act", "both"], ["덕분이다", "it is thanks to you", "end", "both"], ["소중하다", "is precious", "end", "both"], ["따뜻하다", "is warm", "end", "both"], ["감사하다", "I am grateful", "end", "both"], ["힘이 난다", "I feel encouraged", "end", "both"], ["행복하다", "am happy", "end", "both"], ["기억한다", "I remember", "end", "both"], ["간직한다", "I cherish it", "end", "both"], ["함께한다", "we are together", "end", "both"], ["함께했다", "we were together", "end", "both"], ["즐거웠다", "it was fun", "end", "both"], ["아름답다", "is beautiful", "end", "both"], ["빛이 난다", "it glows", "end", "both"], ["피어난다", "it blooms", "end", "both"], ["노래한다", "I sing", "end", "both"], ["꿈을 꾼다", "I dream a dream", "end", "both"], ["고마운 마음", "a grateful heart", "feel", "both"], ["따뜻한 마음", "a warm heart", "feel", "both"], ["소중한 인연", "a precious connection", "thing", "both"], ["다정한 미소", "a gentle smile", "thing", "both"], ["따뜻한 손길", "a caring touch", "thing", "both"], ["날 향한 응원", "encouragement for me", "thing", "both"], ["함께한 시간", "the time we shared", "time", "both"], ["함께한 날들", "the days we shared", "time", "both"], ["내 곁의 사람", "the person by my side", "person", "both"], ["그 작은 배려", "that small kindness", "thing", "both"], ["가족의 사랑", "my family's love", "feel", "both"], ["친구의 응원", "a friend's encouragement", "thing", "both"], ["아침의 햇살", "morning sunlight", "thing", "both"], ["창밖의 풍경", "the view outside the window", "thing", "both"], ["바다의 노래", "the song of the sea", "thing", "both"], ["비 오는 오후", "a rainy afternoon", "time", "both"], ["맛있는 음식", "delicious food", "thing", "both"], ["따뜻한 한 끼", "a warm meal", "thing", "both"], ["즐거운 수업", "an enjoyable class", "thing", "both"], ["새로운 배움", "new learning", "thing", "both"], ["좋아한 노래", "a song I liked", "thing", "both"], ["소중한 내 꿈", "my precious dream", "thing", "both"], ["작은 용기를", "a little courage (object)", "feel", "both"], ["나만의 속도", "my own pace", "thing", "both"], ["서로 기대어", "leaning on each other", "act", "both"], ["마음을 담아", "with heartfelt care", "link", "both"], ["사랑을 담아", "with love", "link", "both"], ["미소를 담아", "with a smile", "link", "both"], ["잊지 않는다", "I do not forget", "end", "both"], ["늘 고마웠다", "I was always grateful", "end", "both"], ["정말 고맙다", "I am truly thankful", "end", "both"], ["참 행복하다", "I am so happy", "end", "both"], ["늘 응원한다", "I always cheer you on", "end", "both"], ["다시 꿈꾼다", "I dream again", "end", "both"], ["감사드린다", "I give my thanks", "end", "both"], ["함께 걷는다", "we walk together", "end", "both"], ["정말 좋았다", "it was really good", "end", "both"], ["다시 웃는다", "I smile again", "end", "both"], ["오래 남는다", "it stays long", "end", "both"], ["깊이 새긴다", "I carve it deep", "end", "both"]];
+const CAT = {end:["Ending","k-end"],act:["Action","k-act"],feel:["Feeling","k-feel"],link:["Link / Detail","k-link"],person:["Person","k-noun"],time:["Time","k-noun"],place:["Place","k-noun"],thing:["Thing","k-noun"],my:["My card","k-my"]};
+const TARGET = [[3,4,3,4],[3,4,3,4],[3,5,4,3]];
+const LINES = [["초장","Line 1 · Introduce"],["중장","Line 2 · Develop"],["종장","Line 3 · Reflect or thank"]];
+const EXAMPLES = [
+  {title:"함께한 날들", theme:1, ids:["오늘도","함께 웃고","마음이","따뜻하다","우리가","함께 걷고","이렇게","행복하다","언제나","함께한 날들","마음 깊이","새긴다"]},
+  {title:"창밖의 봄", theme:3, ids:["바람이","노래하며","꽃잎이","피어난다","햇살이","매일매일","내 곁에","빛이 난다","오늘도","창밖의 풍경","마음 깊이","담는다"]}
+];
+const THEMES = [["가족","Family"],["친구","Friends"],["학교","School"],["자연","Nature"],["음식","Food"],["음악","Music"],["꿈","Dreams"],["일상","Everyday"],["나 자신","Myself"],["추억","Memories"]];
+let theme = null, exIdx = 0;
+
+const syl = s => (s.match(/[가-힣]/g)||[]).length;
+// theme tags (index into THEMES); untagged cards fit every theme
+const TAG = {"내 곁에": [0, 1, 9], "우리가": [0, 1, 2, 9], "친구가": [1, 2, 9], "가족이": [0, 4, 9], "바람이": [3, 7], "햇살이": [3, 7], "바다가": [3, 9], "하늘이": [3, 6], "꽃잎이": [3], "빗소리": [3, 5, 7], "노래가": [5], "음식이": [4, 0], "꿈꾸며": [6, 8], "내 꿈을": [6, 8], "빛난다": [3, 6, 8], "걷는다": [1, 3, 7], "배운다": [2, 8], "꿈꾼다": [6, 8], "흐른다": [3, 5], "피었다": [3, 8], "따뜻한 말": [0, 1, 2], "다정한 말": [0, 1, 2], "작은 배려": [0, 1, 7], "환한 미소": [0, 1, 7], "그 응원에": [1, 2, 6, 8], "맛있는 밥": [4, 0], "좋은 친구": [1, 2], "푸른 바다": [3], "맑은 하늘": [3, 7], "우리 학교": [2, 1], "나의 노래": [5, 8], "나의 꿈을": [6, 8], "나를 믿고": [0, 1, 2, 8], "나를 돕고": [0, 1, 2], "손을 잡고": [0, 1], "함께 웃고": [0, 1, 2, 9], "함께 걷고": [0, 1, 3], "웃어 주니": [0, 1], "믿어 주니": [0, 1, 2, 6], "그 한마디": [0, 1, 2], "노래하며": [5], "빛이 난다": [3, 6, 8], "피어난다": [3, 8], "노래한다": [5, 3], "꿈을 꾼다": [6, 8], "소중한 인연": [1, 9], "다정한 미소": [0, 1], "따뜻한 손길": [0, 1], "날 향한 응원": [1, 6, 8], "함께한 시간": [1, 0, 9], "함께한 날들": [1, 0, 9], "내 곁의 사람": [0, 1], "그 작은 배려": [0, 1, 7], "가족의 사랑": [0], "친구의 응원": [1], "아침의 햇살": [3, 7], "창밖의 풍경": [3, 7], "바다의 노래": [3, 5], "비 오는 오후": [3, 7, 9], "맛있는 음식": [4], "따뜻한 한 끼": [4, 0], "즐거운 수업": [2], "새로운 배움": [2, 8], "좋아한 노래": [5, 9], "소중한 내 꿈": [6, 8], "작은 용기를": [8, 6], "나만의 속도": [8, 6], "서로 기대어": [0, 1], "늘 응원한다": [1, 0, 6], "다시 꿈꾼다": [6, 8], "함께 걷는다": [1, 0, 3]};
+const cards = new Map(RAW.map(([ko,en,cat,deck]) => [ko,{id:ko,ko,en,cat,deck,n:syl(ko),themes:TAG[ko]||[]}]));
+const fits = c => theme!==null && (c.themes||[]).includes(theme);
+const inDeck = c => theme===null || c.cat==="my" || !(c.themes||[]).length || c.themes.includes(theme);
+let order = shuffle([...cards.keys()]);
+let slots = Array(12).fill(null);
+let selected = null, activeSlot = null, filter = "all", challenge = [], myCount = 0;
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function cardHTML(c, from){
+  const [lab,cls] = CAT[c.cat];
+  return `<div class="card ${cls}${selected===c.id?" sel":""}${challenge.includes(c.id)?" chal":""}${fits(c)?" fit":""}" data-card="${c.id}" data-from="${from}" tabindex="0" role="button" aria-label="${esc(c.ko)}, ${c.n} syllables">
+    <span class="meta"><span><i class="dot"></i>${lab}</span><span class="cnt">${c.n}</span></span>
+    <span class="ko">${esc(c.ko)}</span><span class="gl">${esc(c.en)}</span></div>`;
+}
+
+function render(){
+  $("themes").innerHTML = THEMES.map((t,i)=>`<button class="chip" data-theme-i="${i}" aria-pressed="${theme===i}"><b>${t[0]}</b><span class="en">${t[1]}</span></button>`).join("");
+  // rows
+  let h = "";
+  TARGET.forEach((line,r)=>{
+    h += `<div class="row"><div class="rowlab">${LINES[r][0]}<span class="en">${LINES[r][1]}</span></div><div class="slots">`;
+    line.forEach((t,k)=>{
+      const i = r*4+k, id = slots[i];
+      if(!id){
+        h += `<div class="slot empty${activeSlot===i?" active":""}" data-slot="${i}" tabindex="0" role="button" aria-label="Empty box, needs ${t} syllables"><div><b>${t}</b><span>글자 · syll.</span></div></div>`;
+      } else {
+        const c = cards.get(id), ok = c.n===t;
+        h += `<div class="slot ${ok?"ok":"bad"}" data-slot="${i}">${cardHTML(c,"slot")}<span class="mark">${ok?"✓ "+t:c.n+" → "+t}</span></div>`;
+      }
+    });
+    h += `</div></div>`;
+  });
+  $("rows").innerHTML = h;
+
+  // status
+  const filled = slots.filter(Boolean).length;
+  const good = slots.filter((id,i)=>id && cards.get(id).n===TARGET[Math.floor(i/4)][i%4]).length;
+  const bad = filled-good;
+  $("meter").textContent = `${good} / 12 ✓`;
+  $("statusMsg").innerHTML = bad ? `<span style="color:var(--warn)">글자 수를 다시 세어 보세요.</span><span class="en">${bad} box${bad>1?"es need":" needs"} a different syllable count.</span>`
+    : activeSlot!==null ? `${TARGET[Math.floor(activeSlot/4)][activeSlot%4]}글자 카드를 고르세요.<span class="en">Pick a ${TARGET[Math.floor(activeSlot/4)][activeSlot%4]}-syllable card.</span>`
+    : filled===0 ? `빈 칸을 누르면 맞는 카드만 보여요.<span class="en">Tap an empty box to see only cards that fit.</span>` : "";
+
+  // challenge
+  const cb = $("challengeBox");
+  if(challenge.length){
+    const used = challenge.filter(id=>slots.includes(id)).length;
+    cb.hidden = false;
+    cb.innerHTML = `<strong style="color:var(--seal)">도전 / Challenge</strong> ${challenge.map(id=>`<span style="font-family:var(--f-poem);font-weight:700">${esc(cards.get(id).ko)}</span>`).join(" · ")} <span class="en" style="display:inline">— ${used}/2 used</span>`;
+  } else cb.hidden = true;
+
+  // tabs
+  const counts = {all:0,3:0,4:0,5:0};
+  const avail = order.filter(id=>!slots.includes(id)&&inDeck(cards.get(id)));
+  avail.forEach(id=>{counts.all++; const n=cards.get(id).n; if(counts[n]!==undefined) counts[n]++;});
+  $("tabs").innerHTML = ["all",3,4,5].map(f=>`<button class="tab" data-filter="${f}" aria-pressed="${String(filter)===String(f)}">${f==="all"?"전체 All":f+"글자"} ${counts[f]}</button>`).join("");
+
+  // tray
+  const shown = avail.filter(id=>filter==="all"||cards.get(id).n===Number(filter)||cards.get(id).cat==="my")
+    .sort((a,b)=>fits(cards.get(b))-fits(cards.get(a)));
+  $("tray").innerHTML = shown.length ? shown.map(id=>cardHTML(cards.get(id),"tray")).join("")
+    : `<div class="emptytray">이 글자 수의 카드가 없어요. 나만의 카드를 만들어 보세요.<span class="en">No cards left here. Try making your own card.</span></div>`;
+
+  // done
+  const complete = good===12;
+  $("done").hidden = !complete;
+  if(complete) $("poemText").innerHTML = [0,1,2].map(r=>`${esc(poemLines()[r])}<span class="en" style="font-family:var(--f-ui);margin-bottom:6px">${slots.slice(r*4,r*4+4).map(id=>esc(cards.get(id).en)).join(" / ")}</span>`).join("");
+  renderSaved();
+}
+
+function poemLines(){return [0,1,2].map(r=>slots.slice(r*4,r*4+4).map(id=>cards.get(id).ko).join(" "))}
+
+function place(id,i){
+  const prev = slots.indexOf(id); if(prev>-1) slots[prev]=null;
+  slots[i]=id; selected=null; activeSlot=null; render();
+}
+function unplace(id){const i=slots.indexOf(id); if(i>-1){slots[i]=null; render();}}
+
+function tapCard(id){
+  const inSlot = slots.indexOf(id);
+  if(inSlot>-1){
+    if(selected && selected!==id){ place(selected,inSlot); return; }
+    unplace(id); return;
+  }
+  if(activeSlot!==null){ place(id,activeSlot); return; }
+  selected = selected===id?null:id; render();
+}
+function tapSlot(i){
+  if(selected){ place(selected,i); return; }
+  if(slots[i]) return;
+  if(activeSlot===i){ activeSlot=null; filter="all"; }
+  else { activeSlot=i; filter=TARGET[Math.floor(i/4)][i%4]; }
+  render();
+}
+
+/* ---------- pointer: tap + drag (mouse, pen, touch long-press) ---------- */
+let drag = null;
+document.addEventListener("pointerdown",e=>{
+  const el = e.target.closest(".card[data-card]");
+  if(!el || e.button>0) return;
+  drag = {id:el.dataset.card, el, x:e.clientX, y:e.clientY, touch:e.pointerType!=="mouse", started:false, timer:null};
+  if(drag.touch) drag.timer = setTimeout(()=>{ if(drag) startDrag(drag.x,drag.y); },230);
+});
+document.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const d = Math.hypot(e.clientX-drag.x,e.clientY-drag.y);
+  if(!drag.started){
+    if(!drag.touch && d>6) startDrag(e.clientX,e.clientY);
+    else if(drag.touch && d>10){ clearTimeout(drag.timer); drag=null; } // let the page scroll
+    return;
+  }
+  moveGhost(e.clientX,e.clientY);
+});
+document.addEventListener("touchmove",e=>{ if(drag&&drag.started) e.preventDefault(); },{passive:false});
+document.addEventListener("pointerup",e=>{
+  if(!drag) return;
+  clearTimeout(drag.timer);
+  const d = drag; drag = null;
+  if(!d.started){ tapCard(d.id); return; }
+  endDrag(d,e.clientX,e.clientY);
+});
+document.addEventListener("pointercancel",()=>{ if(drag){clearTimeout(drag.timer); if(drag.started) cleanup(drag); drag=null;} });
+document.addEventListener("contextmenu",e=>{ if(e.target.closest(".card")) e.preventDefault(); });
+
+let ghost=null, hoverEl=null;
+function startDrag(x,y){
+  drag.started = true;
+  ghost = drag.el.cloneNode(true); ghost.classList.add("ghost"); ghost.classList.remove("sel");
+  document.body.appendChild(ghost); drag.el.classList.add("dragging");
+  if(drag.el.dataset.from==="slot") $("tray").classList.add("droptarget");
+  moveGhost(x,y);
+}
+function moveGhost(x,y){
+  ghost.style.left=(x-60)+"px"; ghost.style.top=(y-34)+"px";
+  const t = document.elementFromPoint(x,y)?.closest(".slot");
+  if(hoverEl!==t){ hoverEl?.classList.remove("hover"); t?.classList.add("hover"); hoverEl=t; }
+}
+function cleanup(d){ ghost?.remove(); ghost=null; hoverEl?.classList.remove("hover"); hoverEl=null; d.el.classList.remove("dragging"); $("tray").classList.remove("droptarget"); }
+function endDrag(d,x,y){
+  cleanup(d);
+  const t = document.elementFromPoint(x,y);
+  const slot = t?.closest(".slot");
+  if(slot){ place(d.id, Number(slot.dataset.slot)); return; }
+  if(t?.closest("#tray") && d.el.dataset.from==="slot"){ unplace(d.id); return; }
+  render();
+}
+
+document.addEventListener("click",e=>{
+  const s = e.target.closest(".slot.empty"); if(s){ tapSlot(Number(s.dataset.slot)); return; }
+  const tab = e.target.closest(".tab"); if(tab){ filter = tab.dataset.filter==="all"?"all":Number(tab.dataset.filter); activeSlot=null; render(); }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && !$("present").hidden){ closePresent(); return; }
+  if(e.key!=="Enter" && e.key!==" ") return;
+  const c = e.target.closest?.(".card[data-card]"); if(c){ e.preventDefault(); tapCard(c.dataset.card); return; }
+  const s = e.target.closest?.(".slot.empty"); if(s){ e.preventDefault(); tapSlot(Number(s.dataset.slot)); }
+});
+
+/* ---------- tools ---------- */
+$("btnShuffle").onclick = ()=>{ order = shuffle(order); render(); };
+$("btnClear").onclick = ()=>{ slots.fill(null); selected=null; activeSlot=null; filter="all"; $("poemTitle").value=""; render(); };
+$("btnExample").onclick = ()=>{ const ex=EXAMPLES[exIdx++%EXAMPLES.length]; slots=[...ex.ids]; theme=ex.theme; selected=null; activeSlot=null; $("poemTitle").value=ex.title; render(); };
+$("themes").addEventListener("click",e=>{const b=e.target.closest("[data-theme-i]"); if(!b) return; const i=Number(b.dataset.themeI); theme = theme===i?null:i; render();});
+$("btnTheme").onclick = ()=>{ let i; do{ i=Math.floor(Math.random()*THEMES.length) }while(i===theme); theme=i; render(); toast(`주제 · ${THEMES[i][0]} ${THEMES[i][1]}`); };
+$("btnChallenge").onclick = ()=>{
+  const pool = [...cards.values()].filter(c=>c.deck!=="mine"&&inDeck(c)&&!slots.includes(c.id)).map(c=>c.id);
+  challenge = shuffle(pool).slice(0,2); render();
+};
+
+$("mineKo").addEventListener("input",()=>{ $("mineCount").textContent = syl($("mineKo").value)+"자"; });
+$("mineForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const ko = $("mineKo").value.trim(), n = syl(ko);
+  if(!n){ toast("한글로 써 주세요 · Write it in Hangul"); return; }
+  const id = "my-"+(++myCount);
+  cards.set(id,{id,ko,en:$("mineEn").value.trim()||"my phrase",cat:"my",deck:"mine",n});
+  order.unshift(id); $("mineKo").value=""; $("mineEn").value=""; $("mineCount").textContent="0자";
+  render(); toast(`${n}글자 카드를 만들었어요 · Card added`);
+});
+
+function themeLabel(){return theme===null?"":`${THEMES[theme][0]} (${THEMES[theme][1]})`}
+function poemText(){
+  const t = $("poemTitle").value.trim(), n = $("poemName").value.trim();
+  return [t||"나의 시조", [n,themeLabel()].filter(Boolean).join(" · "), "", ...poemLines()].filter((x,i)=>i!==1||x).join("\n");
+}
+$("btnCopy").onclick = async ()=>{
+  try{ await navigator.clipboard.writeText(poemText()); toast("복사했어요 · Copied"); }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($("poemText")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("선택됐어요. 복사하세요 · Selected, press Ctrl+C"); }
+};
+$("btnPresent").onclick = ()=> openPresent($("poemTitle").value.trim()||"나의 시조", [$("poemName").value.trim(),themeLabel()].filter(Boolean).join(" · "), poemLines());
+$("btnSave").onclick = ()=>{
+  const list = store.get("gs-saved",[]);
+  list.unshift({t:$("poemTitle").value.trim()||"나의 시조", n:[$("poemName").value.trim(),themeLabel()].filter(Boolean).join(" · "), l:poemLines(), d:Date.now()});
+  store.set("gs-saved",list.slice(0,30)); render(); toast("저장했어요 · Saved");
+};
+
+function renderSaved(){
+  const list = store.get("gs-saved",[]);
+  $("saved").hidden = !list.length;
+  $("savedList").innerHTML = list.map((p,i)=>`<div class="saveditem"><p><strong>${esc(p.t)}</strong>${p.n?" · "+esc(p.n):""}<span class="en">${esc(p.l[0])} …</span></p>
+    <span class="tools"><button class="btn" data-show="${i}">크게 보기<span class="en">Show</span></button><button class="btn" data-del="${i}">삭제<span class="en">Delete</span></button></span></div>`).join("");
+}
+$("savedList").addEventListener("click",e=>{
+  const list = store.get("gs-saved",[]);
+  const s = e.target.closest("[data-show]"), d = e.target.closest("[data-del]");
+  if(s){ const p=list[s.dataset.show]; openPresent(p.t,p.n,p.l); }
+  if(d){ list.splice(d.dataset.del,1); store.set("gs-saved",list); renderSaved(); }
+});
+
+let lastFocus=null;
+function openPresent(t,n,lines){
+  lastFocus = document.activeElement;
+  $("pTitle").textContent=t; $("pBy").textContent=n?"— "+n:"";
+  $("pLines").innerHTML = lines.map(esc).join("<br>");
+  $("present").hidden=false; $("btnClose").focus();
+}
+function closePresent(){ $("present").hidden=true; lastFocus?.focus?.(); }
+$("btnClose").onclick = closePresent;
+
+let tt;
+function toast(msg){ document.querySelector(".toast")?.remove(); const el=document.createElement("div"); el.className="toast"; el.setAttribute("role","status"); el.textContent=msg; document.body.appendChild(el); clearTimeout(tt); tt=setTimeout(()=>el.remove(),2200); }
+
+render();
+</script>
+
+</body>
+</html>
