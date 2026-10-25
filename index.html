@@ -104,6 +104,10 @@ h1 small{display:block;font-family:var(--f-ui);font-size:14px;font-weight:500;le
 
 .mine{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;font-size:13px}
 .mine label{display:flex;flex-direction:column;gap:3px;flex:1 1 150px;min-width:0}
+.done select{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.btn.submit{text-decoration:none;display:inline-block}
+.btn.submit[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.submitnote{font-size:13px;color:var(--muted);margin:0}
 .mine input,.done input{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
 .mine .live{font-variant-numeric:tabular-nums;color:var(--muted);align-self:center}
 
@@ -170,11 +174,14 @@ h1 small{display:block;font-family:var(--f-ui);font-size:14px;font-weight:500;le
     <h2>완성! <span class="en" style="display:inline;font-family:var(--f-ui)">Your sijo is complete.</span></h2>
     <div class="fields">
       <label for="poemTitle">제목<span class="en">Title</span><input id="poemTitle" maxlength="40"></label>
-      <label for="poemName">이름<span class="en">Name</span><input id="poemName" maxlength="30"></label>
+      <label for="poemClass">반<span class="en">Class</span><select id="poemClass"><option value="">선택 · Choose</option><option>Korean 1 (Per 1)</option><option>Korean 1 (Per 3)</option><option>Korean 2 (Per 4)</option><option>Korean 2 (Per 6)</option><option>Korean 3</option><option>Korean 4</option></select></label>
+      <label for="poemName">이름<span class="en">Last name, First name, Korean name</span><input id="poemName" maxlength="60" placeholder="Kim, Daniel, 김다니엘"></label>
     </div>
     <p class="poem" id="poemText"></p>
+    <p class="submitnote" id="submitNote">반과 이름을 쓰면 제출할 수 있어요.<span class="en">Choose your class and type your name to submit.</span></p>
     <div class="tools">
-      <button class="btn primary" id="btnPresent">크게 보기<span class="en">Show on screen</span></button>
+      <a class="btn primary submit" id="btnSubmit" href="#" target="_blank" rel="noopener" aria-disabled="true">선생님께 제출<span class="en">Submit to teacher</span></a>
+      <button class="btn" id="btnPresent">크게 보기<span class="en">Show on screen</span></button>
       <button class="btn" id="btnCopy">복사하기<span class="en">Copy to share</span></button>
       <button class="btn" id="btnSave">내 시조 모음에 저장<span class="en">Save to my poems</span></button>
     </div>
@@ -299,6 +306,7 @@ function render(){
   $("done").hidden = !complete;
   if(complete) $("poemText").innerHTML = [0,1,2].map(r=>`${esc(poemLines()[r])}<span class="en" style="font-family:var(--f-ui);margin-bottom:6px">${slots.slice(r*4,r*4+4).map(id=>esc(cards.get(id).en)).join(" / ")}</span>`).join("");
   renderSaved();
+  if(typeof updateSubmit==="function" && document.getElementById("btnSubmit")) updateSubmit();
 }
 
 function poemLines(){return [0,1,2].map(r=>slots.slice(r*4,r*4+4).map(id=>cards.get(id).ko).join(" "))}
@@ -452,6 +460,28 @@ $("btnClose").onclick = closePresent;
 
 let tt;
 function toast(msg){ document.querySelector(".toast")?.remove(); const el=document.createElement("div"); el.className="toast"; el.setAttribute("role","status"); el.textContent=msg; document.body.appendChild(el); clearTimeout(tt); tt=setTimeout(()=>el.remove(),2200); }
+
+/* ---------- Google Form submit ---------- */
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdkC3yc5LSsfujYzGK6P5riy94-lw1ntkPsPsntwrDwz6VPvQ/viewform";
+const F_CLASS = "entry.205378344", F_NAME = "entry.713255215", F_TITLE = "entry.1918626630", F_POEM = "entry.835880952";
+$("poemClass").value = store.get("gs-class","");
+$("poemName").value = store.get("gs-name","");
+function updateSubmit(){
+  const c = $("poemClass").value, n = $("poemName").value.trim(), ok = !!(c && n) && slots.every(Boolean);
+  const btn = $("btnSubmit");
+  btn.setAttribute("aria-disabled", String(!ok));
+  $("submitNote").hidden = ok;
+  if(!ok){ btn.href = "#"; return; }
+  const poem = poemLines().join("\n") + (theme!==null ? `\n\n주제 Theme: ${themeLabel()}` : "");
+  const q = new URLSearchParams({usp:"pp_url"});
+  q.set(F_CLASS,c); q.set(F_NAME,n); q.set(F_TITLE,$("poemTitle").value.trim()||"나의 시조"); q.set(F_POEM,poem);
+  btn.href = FORM + "?" + q.toString();
+}
+["poemClass","poemName","poemTitle"].forEach(id=>$(id).addEventListener("input",()=>{
+  store.set("gs-class",$("poemClass").value); store.set("gs-name",$("poemName").value.trim()); updateSubmit();
+}));
+$("poemClass").addEventListener("change",()=>{ store.set("gs-class",$("poemClass").value); updateSubmit(); });
+$("btnSubmit").addEventListener("click",e=>{ if($("btnSubmit").getAttribute("aria-disabled")==="true"){ e.preventDefault(); return; } toast("폼이 열리면 Submit을 누르세요 · Press Submit on the form"); });
 
 render();
 </script>
