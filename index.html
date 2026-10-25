@@ -463,7 +463,7 @@ function toast(msg){ document.querySelector(".toast")?.remove(); const el=docume
 
 /* ---------- Google Form submit ---------- */
 const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdkC3yc5LSsfujYzGK6P5riy94-lw1ntkPsPsntwrDwz6VPvQ/viewform";
-const F_CLASS = "entry.205378344", F_NAME = "entry.713255215", F_TITLE = "entry.1918626630", F_POEM = "entry.835880952";
+const F_CLASS = "entry.205378344", F_NAME = "entry.713255215", F_TITLE = "entry.1918626630", F_POEM = "entry.835880952", F_THEME = "entry.454036632";
 $("poemClass").value = store.get("gs-class","");
 $("poemName").value = store.get("gs-name","");
 function updateSubmit(){
@@ -472,9 +472,9 @@ function updateSubmit(){
   btn.setAttribute("aria-disabled", String(!ok));
   $("submitNote").hidden = ok;
   if(!ok){ btn.href = "#"; return; }
-  const poem = poemLines().join("\n") + (theme!==null ? `\n\n주제 Theme: ${themeLabel()}` : "");
+  const poem = poemLines().join("\n");
   const q = new URLSearchParams({usp:"pp_url"});
-  q.set(F_CLASS,c); q.set(F_NAME,n); q.set(F_TITLE,$("poemTitle").value.trim()||"나의 시조"); q.set(F_POEM,poem);
+  q.set(F_CLASS,c); q.set(F_NAME,n); q.set(F_TITLE,$("poemTitle").value.trim()||"나의 시조"); q.set(F_POEM,poem); if(theme!==null) q.set(F_THEME,themeLabel());
   btn.href = FORM + "?" + q.toString();
 }
 ["poemClass","poemName","poemTitle"].forEach(id=>$(id).addEventListener("input",()=>{
